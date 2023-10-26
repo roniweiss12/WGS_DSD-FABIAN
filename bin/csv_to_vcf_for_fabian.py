@@ -55,18 +55,7 @@ def df_to_vcf(file,info_col):
     FORMAT_cols = info_df[info_df.type == 'FORMAT'].ID
     format = ':'.join(FORMAT_cols.tolist())
     res_df['FORMAT'] = format
-    samples = set([i.split(':')[0] for i in df.columns if ':' in i])
-
-    # Create a ThreadPoolExecutor to run the function in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-        # Submit the function for each item in the list
-        # This starts the parallel execution
-        futures = [executor.submit(lambda x:prepare_sample(df,x) , id) for id in samples]
-
-        # Wait for all tasks to complete and retrieve the results
-        results = [future.result() for future in concurrent.futures.as_completed(futures)]
-    sample_df = pd.concat(results, axis=1)
-    res_df = pd.concat([res_df,sample_df], axis=1)
+    res_df['generic_sample'] = '0/1:99:99:1'
     return res_df
 
 
