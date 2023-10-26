@@ -1,0 +1,28 @@
+ID,type,Number,Dtype,Description
+gnomad_qual,FILTER, 1, String, ganomAD quality filter
+AF,INFO,A,Float,gnomAD Allele Frequency
+AF_popmax,INFO,A,Float, gnomAD popmax Allele Frequency
+GHid,INFO,1,String,geneHancer ID
+GH_is_elite,INFO,1,Integer,High quality according to GeneHancer
+GH_type,INFO,1,String,Promotor or enhancer according to GeneHancer
+geneHancer,INFO,1,String,GeneHancer info 
+repeatsMasker,INFO,1,String,Found in reapetative area 
+DSDgenes_1mb,INFO,1,String,found 1mb next to DSD gene
+DSDgenes_1.5mb,INFO,1,String,found 1.5mb next to DSD gene
+distance_from_nearest_DSD_TSS,INFO,1,Integer,Distance from nearest DSD gene
+INTERVAL_ID,INFO,1,String,ATAC-seq interval ID
+from,INFO,1,Integer,Interval starting cordinate 
+to,INFO,1,Integer,Interval end cordinate
+length,INFO,1,Integer,Length of ATAC-seq interval
+median_DP,INFO,1,Integer,Median of the reading depth of all samples
+median_GQ,INFO,1,Float,Median of the gene quality of all samples
+total_probands,INFO,1,Integer,Amount of probands the variant found in
+sinclair_probands,INFO,1,Integer,Amount of probands the variant found in sinclair samples
+AF_sinclair,INFO,1,Float,Variants AF in sinclair cohort
+local_AF_overall,INFO,1,Float,Variants AF in out cohort
+stringent_AF,INFO,1,Float,Variants AF in stringent
+quality,INFO,1,String,Is variant passed our quality test
+GT,FORMAT,1,String,Genotype
+DP,FORMAT,1,Integer,Read Depth
+GQ,FORMAT,1,Integer,Genotype Quality
+AB,FORMAT,1,Float,Allelic Balance
