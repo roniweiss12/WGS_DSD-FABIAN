@@ -67,11 +67,27 @@ process addFabToVars {
     tuple file(firstFab), file(secondFab)
 
     output:
-    file "fab_${csvFile}"
+    tuple file("fab_${csvFile}"), file("heatmap_data.csv")
+    //file "fab_${csvFile}"
 
     script:
     """
     Rscript ${params.bin}/get_fabian_data.R ${csvFile} ${firstFab} ${secondFab}
+    """
+}
+process toExcel {
+    
+    publishDir params.curProcessedOutputDir, mode: 'copy'
+
+    input:
+    tuple file("fab_${csvFile}"), file("heatmap_data.csv")
+
+    output:
+    file "fabian_heatmap.xlsx"
+
+    script:
+    """
+    python ${params.bin}/fab_to_excel.py heatmap_data.csv
     """
 }
 workflow {
@@ -79,7 +95,7 @@ workflow {
     def splitted = splitCsvAt10k(vars)
     def fabs = splitted.flatten() | csvToVcf | runFabian
     def fab_results = fabs.collect { it }
-    addFabToVars(vars, fab_results)
+    toExcel(addFabToVars(vars, fab_results))
 }
 
 //nextflow run fabian_analysis.nf --csvFile ../DSDncVariants/variants_pipeline/2023-10-23/qualityDSD_variants.csv --curProcessedOutputDir results26_10 -resume
