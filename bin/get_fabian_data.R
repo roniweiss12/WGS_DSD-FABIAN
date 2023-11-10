@@ -1,9 +1,12 @@
 #!/usr/bin/env Rscript
-args = commandArgs(trailingOnly=TRUE)
-library("dplyr")
-library("tidyr")
-library("stringr")
+args <- commandArgs(trailingOnly = TRUE)
+library(dplyr)
+library(tidyr)
+library(stringr)
 library(utils)
+library(openxlsx)
+library(pheatmap)
+library(RColorBrewer)
 
 read_fabian <- function(zipped_fabian){
   temp_dir <- tempdir()
@@ -56,9 +59,17 @@ unlisted_data <- lapply(wide_summary_data, unlist)
 
 # Convert the result to a data frame
 unlisted_data <- as.data.frame(unlisted_data)
-
+index_cols <- c("CHROM", "POS", "ALT", "REF")
 # Join wide_summary_data to variants
-vars <- left_join(vars, unlisted_data, by = c("CHROM", "POS", "ALT", "REF"))
+vars <- left_join(vars, unlisted_data, by = index_cols)
+
+tf_cols <- c("AR", "CBX3", "DMRT1", "DMRT3", "ESR1", "ESR2", "FOXL1",
+"GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1", "SOX10", "SOX8", "SOX9",
+"SRY", "TCF3", "TCF12", "WT1")
+
+vars <- vars %>%
+  mutate(max_tf_value = apply(select(., one_of(tf_cols)), MARGIN = 1, function(x) max(abs(x)))) %>%
+  arrange(desc(max_tf_value))
 
 first_columns <- c("CHROM", "POS", "REF",	"ALT",	"FILTER",	"AF",	"AF_popmax",
  	"GHid",	"GH_is_elite",	"GH_type", "geneHancer", "repeatsMasker",
@@ -67,9 +78,22 @@ first_columns <- c("CHROM", "POS", "REF",	"ALT",	"FILTER",	"AF",	"AF_popmax",
   "total_probands",	"sinclair_probands",	"AF_sinclair",	"ken_probands",
   "AF_ken",	"zangen_probands",	"AF_zangen",	"local_AF_overall",
   "stringent_AF",	"quality", "conservation", "AR", "CBX3", "DMRT1",
-  "DMRT3", "ESR1", "ESR2", "FOXL1", "GATA4", "LHX9", "NR5A1", "RUNX1",
-  "SOX10", "SOX8", "SOX9", "SRY", "WT1")
+  "DMRT3", "ESR1", "ESR2", "FOXL1", "GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1",
+  "SOX10", "SOX8", "SOX9", "SRY", "TCF3", "TCF12", "WT1", "max_tf_value")
 # Reorder the columns
 vars <- vars[, c(first_columns, setdiff(names(vars), first_columns))]
+write.csv(vars, paste0("fab_", vars_file), quote = FALSE, row.names = FALSE, na = "")
+# Concatenate values in specified columns and set as index
+vars$index <- do.call(paste, c(vars[index_cols], sep = "_"))
+vars <- vars[, !names(vars) %in% index_cols]  # Remove original columns
 
-write.csv(vars, paste0("fab_", vars_file), quote = FALSE, row.names = FALSE)
+# Set the concatenated column as the index
+rownames(vars) <- vars$index
+vars$index <- NULL  # Remove the concatenated column
+tf_cols <- c(tf_cols, "max_tf_value")
+# Select columns for the heatmap (excluding the Sample column)
+heatmap_data <- vars[, tf_cols]
+heatmap_data[is.na(heatmap_data)] <- 0
+heatmap_data <- round(heatmap_data, 2)
+
+write.csv(heatmap_data, "heatmap_data.csv", quote = FALSE, row.names = TRUE, na = "")
