@@ -7,8 +7,10 @@ This repository contains a pipeline that inputs a variants.csv file and applies 
 2. Run it through FABIAN, against the following TF's: AR CBX3 DMRT1 DMRT3 ESR1 ESR2 FOXL1 GATA4 LHX9 NR5A1 RUNX1 SOX10 SOX8 SOX9 SRY WT1
    
 3. Process the results into the original variants file.
+   
+4. Produce an excel file with a heatmap, marking the most significant scores.
 
-The output file is the same variants.csv file with extra columns, one for each TF, that contain the average gain/loss of function score.
+The output file is the same variants.csv file with extra columns, one for each TF, that contain the average gain/loss of function score + "fabian_heatmap.xlsx".
 
 Run with the command:
 
