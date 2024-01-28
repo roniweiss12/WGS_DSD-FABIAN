@@ -42,7 +42,7 @@ def df_to_vcf(file,info_col):
     info_df = pd.read_csv(info_col)
     df = pd.read_csv(file, low_memory=False)
     res_df = pd.DataFrame()
-    res_df['#CHROM'] = df.CHROM.str.replace('chr','')
+    res_df['#CHROM'] = df.CHROM #.str.replace('chr','')
     res_df['POS'] = df.POS
     res_df['ID'] = '.'
     res_df['REF'] = df.REF

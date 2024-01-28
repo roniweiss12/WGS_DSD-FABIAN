@@ -65,7 +65,7 @@ vars <- left_join(vars, unlisted_data, by = index_cols)
 
 tf_cols <- c("AR", "CBX3", "DMRT1", "DMRT3", "ESR1", "ESR2", "FOXL1",
 "GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1", "SOX10", "SOX8", "SOX9",
-"SRY", "TCF3", "TCF12", "WT1")
+"SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6", "MYOD1", "NKX1.1", "CEBPE")
 
 vars <- vars %>%
   mutate(max_tf_value = apply(select(., one_of(tf_cols)), MARGIN = 1, function(x) max(abs(x)))) %>%
@@ -79,7 +79,8 @@ first_columns <- c("CHROM", "POS", "REF",	"ALT",	"FILTER",	"AF",	"AF_popmax",
   "AF_ken",	"zangen_probands",	"AF_zangen",	"local_AF_overall",
   "stringent_AF",	"quality", "conservation", "AR", "CBX3", "DMRT1",
   "DMRT3", "ESR1", "ESR2", "FOXL1", "GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1",
-  "SOX10", "SOX8", "SOX9", "SRY", "TCF3", "TCF12", "WT1", "max_tf_value")
+  "SOX10", "SOX8", "SOX9", "SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6",
+  "MYOD1", "NKX1.1", "CEBPE", "max_tf_value")
 # Reorder the columns
 vars <- vars[, c(first_columns, setdiff(names(vars), first_columns))]
 write.csv(vars, paste0("fab_", vars_file), quote = FALSE, row.names = FALSE, na = "")
