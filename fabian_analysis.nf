@@ -6,7 +6,7 @@ params.bin = "/home/stu/nitzang/WGS_DSD-FABIAN/bin"
 params.curProcessedOutputDir = ""
 
 process splitCsvAt10k {
-    publishDir params.curProcessedOutputDir, mode: 'copy'
+    //publishDir params.curProcessedOutputDir, mode: 'copy'
 
     input:
     file vars
@@ -24,7 +24,7 @@ process splitCsvAt10k {
 }
 
 process csvToVcf {
-    publishDir params.curProcessedOutputDir, mode: 'copy', failOnError: true
+    //publishDir params.curProcessedOutputDir, mode: 'copy', failOnError: true
 
    input:
     file csvFile
@@ -44,7 +44,7 @@ process csvToVcf {
 
 process runFabian {
     
-    publishDir params.curProcessedOutputDir, mode: 'copy'
+    //publishDir params.curProcessedOutputDir, mode: 'copy'
 
     input:
     tuple file(gzFile), file (tbiFile)
@@ -98,4 +98,4 @@ workflow {
     toExcel(addFabToVars(vars, fab_results))
 }
 
-//nextflow run fabian_analysis.nf --csvFile ../DSDncVariants/variants_pipeline/2023-10-23/qualityDSD_variants.csv --curProcessedOutputDir results26_10 -resume
+//nextflow run fabian_analysis.nf --csvFile ../DSDncVariants/variants_pipeline/2023-11-22/qualityDSD_variants.csv --curProcessedOutputDir results22_11 -resume
