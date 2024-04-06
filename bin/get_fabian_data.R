@@ -15,7 +15,22 @@ read_fabian <- function(zipped_fabian){
   fabian_file <- read.table(df_path, sep = '\t', header = F)
   return(fabian_file)
 }
-#print(args[2])
+
+TF_COLS <- c("AR", "CBX3", "DMRT1", "DMRT3", "ESR1", "ESR2", "FOXL1",
+"GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1", "SOX10", "SOX8", "SOX9",
+"SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6", "MYOD1", "NKX1.1", "CEBPE")
+
+FIRST_COLUMNS <- c("CHROM", "POS", "REF",	"ALT",	"FILTER",	"AF",	"AF_popmax",
+ 	"GHid",	"GH_is_elite",	"GH_type", "geneHancer", "repeatsMasker",
+  "DSDgenes_1mb", "DSDgenes_1.5mb", "distance_from_nearest_DSD_TSS",
+  "INTERVAL_ID", "from", "to",	"length", "median_DP",	"median_GQ",
+  "total_probands",	"sinclair_probands",	"AF_sinclair",	"ken_probands",
+  "AF_ken",	"zangen_probands",	"AF_zangen",	"local_AF_overall",
+  "stringent_AF",	"quality", "conservation", "AR", "CBX3", "DMRT1",
+  "DMRT3", "ESR1", "ESR2", "FOXL1", "GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1",
+  "SOX10", "SOX8", "SOX9", "SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6",
+  "MYOD1", "NKX1.1", "CEBPE", "max_tf_value")
+
 vars_file <- args[1]
 zipped_fabian1 <- args[2]
 zipped_fabian2 <- args[3]
@@ -63,26 +78,12 @@ index_cols <- c("CHROM", "POS", "ALT", "REF")
 # Join wide_summary_data to variants
 vars <- left_join(vars, unlisted_data, by = index_cols)
 
-tf_cols <- c("AR", "CBX3", "DMRT1", "DMRT3", "ESR1", "ESR2", "FOXL1",
-"GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1", "SOX10", "SOX8", "SOX9",
-"SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6", "MYOD1", "NKX1.1", "CEBPE")
-
 vars <- vars %>%
-  mutate(max_tf_value = apply(select(., one_of(tf_cols)), MARGIN = 1, function(x) max(abs(x)))) %>%
+  mutate(max_tf_value = apply(select(., one_of(TF_COLS)), MARGIN = 1, function(x) max(abs(x)))) %>%
   arrange(desc(max_tf_value))
 
-first_columns <- c("CHROM", "POS", "REF",	"ALT",	"FILTER",	"AF",	"AF_popmax",
- 	"GHid",	"GH_is_elite",	"GH_type", "geneHancer", "repeatsMasker",
-  "DSDgenes_1mb", "DSDgenes_1.5mb", "distance_from_nearest_DSD_TSS",
-  "INTERVAL_ID", "from", "to",	"length", "median_DP",	"median_GQ",
-  "total_probands",	"sinclair_probands",	"AF_sinclair",	"ken_probands",
-  "AF_ken",	"zangen_probands",	"AF_zangen",	"local_AF_overall",
-  "stringent_AF",	"quality", "conservation", "AR", "CBX3", "DMRT1",
-  "DMRT3", "ESR1", "ESR2", "FOXL1", "GATA4", "LHX9", "LEF1", "NR5A1", "RUNX1",
-  "SOX10", "SOX8", "SOX9", "SRY", "TCF3", "TCF12", "WT1", "ASCL1", "BCL6",
-  "MYOD1", "NKX1.1", "CEBPE", "max_tf_value")
 # Reorder the columns
-vars <- vars[, c(first_columns, setdiff(names(vars), first_columns))]
+vars <- vars[, c(FIRST_COLUMNS, setdiff(names(vars), first_columns))]
 write.csv(vars, paste0("fab_", vars_file), quote = FALSE, row.names = FALSE, na = "")
 # Concatenate values in specified columns and set as index
 vars$index <- do.call(paste, c(vars[index_cols], sep = "_"))
@@ -91,9 +92,9 @@ vars <- vars[, !names(vars) %in% index_cols]  # Remove original columns
 # Set the concatenated column as the index
 rownames(vars) <- vars$index
 vars$index <- NULL  # Remove the concatenated column
-tf_cols <- c(tf_cols, "max_tf_value")
+TF_COLS <- c(TF_COLS, "max_tf_value")
 # Select columns for the heatmap (excluding the Sample column)
-heatmap_data <- vars[, tf_cols]
+heatmap_data <- vars[, TF_COLS]
 heatmap_data[is.na(heatmap_data)] <- 0
 heatmap_data <- round(heatmap_data, 2)
 
